@@ -1,8 +1,54 @@
 <?php
 namespace Home\Controller;
+
 use Think\Controller;
+use Com\Wechat;
+use Com\WechatAuth;
+
+
 class IndexController extends Controller {
+
     public function index(){
-        $this->show('<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px } a,a:hover{color:blue;}</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>版本 V{$Think.version}</div><script type="text/javascript" src="http://ad.topthink.com/Public/static/client.js"></script><thinkad id="ad_55e75dfae343f5a1"></thinkad><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>','utf-8');
+
+    	$token = "hope";
+
+    	$wechat = new Wechat($token);
+
+    	$data = $wechat->request();
+
+    	if($data && is_array($data)) {
+    		switch($data['MsgType']) {
+    			case "text" :
+    			$this->Text($wechat, $data);
+    		}
+    	}
+        
     }
+
+
+   //回复文本消息
+   private function Text($wechat, $data) {
+
+   	if(strstr($data['Content'], "文本")) {
+   		$text = "我正在使用ThinkPHP开发微信";
+   		$this->logger("发送消息: \n".$text);
+   		$wechat->replyText($text);
+
+   	}
+
+   } 
+
+   //日志
+   private function logger($content) {
+   	$logSize = 100000;
+   	$log = "log.txt";
+
+   	if(file_exists($log) && filesize($log) > $logSize) {
+   		unlink($log);
+   	}
+
+   	file_put_contents($log, date("H:i:s")."".$content."\n", FILE_APPEND);
+   }
+
+
 }
