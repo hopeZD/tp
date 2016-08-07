@@ -34,7 +34,8 @@ class IndexController extends Controller {
    		$this->logger("发送消息: \n".$text);
    		$wechat->replyText($text);
 
-   	} else if (strstr($data['Content'], 'myself')) {
+   	} else if (strstr($data['Content'], "my")) {
+
    		$this->users($wechat, $data);
    	}
 
